@@ -1,6 +1,5 @@
 ---
-name: jw-ez-dev:jira-create
-description: Create a new JIRA ticket in the configured Justworks project. Triggers on /jw-ez-dev:jira-create, create jira ticket, new ticket, new jira issue, file a ticket.
+description: Create a new JIRA ticket in the configured Justworks project
 argument-hint: [--type=Task|Story|Bug] [--parent=KEY] <summary>
 allowed-tools:
   - Bash

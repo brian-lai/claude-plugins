@@ -1,6 +1,5 @@
 ---
-name: jw-ez-dev:jira-list
-description: List and search JIRA tickets in the configured Justworks project. Triggers on /jw-ez-dev:jira-list, list jira tickets, show my tickets, search jira, jira issues.
+description: List and search JIRA tickets in the configured Justworks project
 argument-hint: [--mine] [--status="In Progress"] [--type=Bug] [--sprint=current] [search terms]
 allowed-tools:
   - Bash

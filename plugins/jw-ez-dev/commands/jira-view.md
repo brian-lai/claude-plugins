@@ -1,6 +1,5 @@
 ---
-name: jw-ez-dev:jira-view
-description: View detailed information about a specific JIRA ticket. Triggers on /jw-ez-dev:jira-view, show jira ticket, view ticket details, ticket info.
+description: View detailed information about a specific JIRA ticket
 argument-hint: <issue-key or number>
 allowed-tools:
   - Bash

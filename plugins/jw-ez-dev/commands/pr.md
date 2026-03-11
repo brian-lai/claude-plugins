@@ -1,6 +1,5 @@
 ---
-name: jw-ez-dev:pr
-description: Create a GitHub Pull Request with JIRA ticket reference in the title and body. Triggers on /jw-ez-dev:pr, create pr, pull request, open pr, create pull request with jira.
+description: Create a GitHub Pull Request with JIRA ticket reference in the title and body
 argument-hint: [issue-key] [--draft] [--base=branch]
 allowed-tools:
   - Bash
@@ -116,7 +115,7 @@ Warning: You have uncommitted changes (not included in PR).
 ## Notes
 
 - Requires `gh` CLI installed and authenticated
-- Reads JIRA config from `~/.claude/jw-ez-dev/projects.json` (shared with jira skills)
+- Reads JIRA config from `~/.claude/jw-ez-dev/projects.json` (shared with jira commands)
 - Ticket browse URL: `https://{cloudId}/browse/{TICKET_KEY}`
 - PR title format: `{TICKET_ID} {description}` (ticket ID first, no colon)
 - Works with or without JIRA config — gracefully degrades

@@ -1,6 +1,5 @@
 ---
-name: jw-ez-dev:jira-board
-description: Display the current sprint board status for the configured JIRA project. Triggers on /jw-ez-dev:jira-board, sprint board, board status, sprint status, current sprint, show board.
+description: Display the current sprint board status for the configured JIRA project
 argument-hint: [--all] [--mine]
 allowed-tools:
   - Bash

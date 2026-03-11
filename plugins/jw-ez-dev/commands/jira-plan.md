@@ -1,6 +1,5 @@
 ---
-name: jw-ez-dev:jira-plan
-description: Bulk-create JIRA tickets from a plan, task list, or work description. Triggers on /jw-ez-dev:jira-plan, bulk create tickets, create tickets from plan, plan to jira, break down work into tickets.
+description: Bulk-create JIRA tickets from a plan, task list, or work description
 argument-hint: [--from-plan] [--from-file=path] [--epic="Epic Name"]
 allowed-tools:
   - Bash
@@ -12,9 +11,9 @@ allowed-tools:
   - mcp__atlassian__getJiraProjectIssueTypesMetadata
 ---
 
-# Bulk Create JIRA Tickets from a Plan
+# Bulk-Create JIRA Tickets from Plan
 
-Parse a plan, task list, or work description into structured JIRA tickets and create them.
+Create multiple JIRA tickets from a Pret/Para plan, task list, or ad-hoc description.
 
 ## Step 1: Load Project Config
 
@@ -29,13 +28,11 @@ Call `mcp__atlassian__getJiraProjectIssueTypesMetadata` to know what types are a
 
 ## Step 3: Gather Work Items
 
-Parse `$ARGUMENTS`:
-
-**From Pret plan (`--from-plan`):**
+**From plan (`--from-plan`):**
 1. Read `context/context.md` to find the active plan
 2. Read the plan file
 3. Extract actionable items from "Implementation Steps", "Approach", or "To-Do List" sections
-4. For phased plans: one Story/Task per phase, sub-tasks for each step
+4. For phased plans, create one Story/Task per phase, with sub-tasks for each step
 
 **From specific file (`--from-file=X`):**
 1. Read the specified file
@@ -44,38 +41,33 @@ Parse `$ARGUMENTS`:
 
 **Interactive (no flags):**
 1. Ask the user to describe the work or paste a task list
-2. Parse into individual work items
+2. Parse the input into individual work items
 
 ## Step 4: Propose Ticket Structure
 
-**Always present and get confirmation before creating anything:**
+Before creating anything, present the proposed tickets for approval:
 
 ```
 ## Proposed JIRA Tickets
-
-Based on your plan, I'll create the following:
-
-### Epic: Implement User Authentication (optional)
 
 | # | Type | Summary | Parent |
 |---|------|---------|--------|
 | 1 | Story | Set up auth middleware | Epic |
 | 2 | Task | Configure JWT token generation | Story 1 |
 | 3 | Task | Add login endpoint | Story 1 |
-| 4 | Story | Implement user registration | Epic |
-| 5 | Task | Create registration form | Story 4 |
-| 6 | Task | Add email verification | Story 4 |
 
 Shall I create these tickets? (You can also adjust before confirming)
 ```
+
+Wait for user confirmation before creating.
 
 ## Step 5: Create Tickets
 
 Create in dependency order (parents before children):
 
-1. **Epic first** (if `--epic` or proposed)
-2. **Stories/Tasks** (top-level items, linked to Epic if applicable)
-3. **Sub-tasks** (child items, linked to parent Story/Task)
+1. **Create Epic first** (if `--epic` or if proposed)
+2. **Create Stories/Tasks** (top-level items)
+3. **Create Sub-tasks** (child items)
 
 ## Step 6: Display Results
 
@@ -88,19 +80,14 @@ Create in dependency order (parents before children):
 | RNA-501 | Story | Set up auth middleware | RNA-500 |
 | RNA-502 | Task | Configure JWT token generation | RNA-501 |
 
-**6 tickets created in RNA project.**
+**3 tickets created in RNA project.**
 
-Board: https://justworks-tech.atlassian.net/jira/software/c/projects/RNA/boards/496
+View board: https://justworks-tech.atlassian.net/jira/software/c/projects/RNA/boards/496
 ```
 
 ## Step 7: Update Context (if from plan)
 
-If tickets were created from a Pret plan, offer to update `context/context.md` with ticket keys:
-```markdown
-## To-Do List
-- [ ] Set up auth middleware (RNA-501)
-- [ ] Configure JWT token generation (RNA-502)
-```
+If tickets were created from a plan, optionally update `context/context.md` to reference the JIRA ticket keys alongside the to-do items.
 
 ## Mapping Rules: Plan Items to Ticket Types
 
@@ -114,7 +101,7 @@ If tickets were created from a Pret plan, offer to update `context/context.md` w
 
 ## Notes
 
-- Always propose and get confirmation before creating
-- Create parents before children
-- Keep summaries concise (under 100 chars)
-- Pairs naturally with the Pret-a-Program planning workflow
+- Always propose and get confirmation before creating tickets
+- Create parents before children (Epic -> Story -> Sub-task)
+- Keep ticket summaries concise (under 100 chars)
+- Descriptions support Markdown

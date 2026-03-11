@@ -1,6 +1,5 @@
 ---
-name: jw-ez-dev:jira-update
-description: Update fields or transition the status of a JIRA ticket. Triggers on /jw-ez-dev:jira-update, update jira ticket, move ticket, transition ticket, change ticket status, assign ticket.
+description: Update fields or transition the status of a JIRA ticket
 argument-hint: <issue-key> [--status="In Progress"] [--assign=name] [--priority=High] [--comment="text"]
 allowed-tools:
   - Bash

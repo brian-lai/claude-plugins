@@ -1,6 +1,5 @@
 ---
-name: jw-ez-dev:jira-setup
-description: Set up and configure a Justworks JIRA project for the current repository. Triggers on /jw-ez-dev:jira-setup, jira setup, configure jira, link jira project. Also checks for Atlassian MCP connectivity and guides users through setup if missing.
+description: Set up and configure a Justworks JIRA project for the current repository
 argument-hint: [--reconfigure]
 allowed-tools:
   - Bash
@@ -13,7 +12,7 @@ allowed-tools:
 
 # JIRA Project Setup
 
-Configure a Justworks JIRA project for the current repository. This persists the project mapping so all other `jw-ez-dev` skills know which JIRA project to target.
+Configure a Justworks JIRA project for the current repository. This persists the project mapping so all other `jw-ez-dev` commands know which JIRA project to target.
 
 ## Prerequisites Check
 
@@ -130,7 +129,7 @@ If the URL doesn't match, ask again with a helpful error showing the expected fo
    ```
 4. Write the updated JSON back
 
-## Step 5: Display Configuration & Available Skills
+## Step 5: Display Configuration & Available Commands
 
 ```
 ## JW EZ Dev - Project Configured
@@ -159,9 +158,9 @@ Tip: Use `/jw-ez-dev:jira-setup --reconfigure` to link a different project.
 
 The config file at `~/.claude/jw-ez-dev/projects.json` maps git repo roots to JIRA project details. Multiple repos can map to different JIRA projects.
 
-## Helper: Load Project Config (for all other skills)
+## Helper: Load Project Config (for all other commands)
 
-All sibling skills should follow this pattern to load config:
+All sibling commands should follow this pattern to load config:
 
 1. Run `git rev-parse --show-toplevel` (or use cwd if not in a git repo)
 2. Read `~/.claude/jw-ez-dev/projects.json`
