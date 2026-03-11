@@ -20,7 +20,7 @@ Create a GitHub Pull Request with the JIRA ticket ID in the title and a link to 
 
 1. Read `~/.claude/jw-ez-dev/projects.json`
 2. Look up the current directory (git repo root)
-3. If not configured, warn: "No JIRA project configured. Run `/jw-ez-dev:jira-setup` first. You can still create a PR without JIRA linking — proceed?"
+3. If not configured, warn: "No JIRA project configured. Run `/dev:jira setup` first. You can still create a PR without JIRA linking — proceed?"
 
 ## Step 2: Resolve JIRA Ticket
 

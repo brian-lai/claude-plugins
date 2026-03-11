@@ -1,9 +1,8 @@
 {
-  "name": "jw-ez-dev",
-  "description": "Justworks developer workflow toolkit. Manage JIRA tickets, create PRs with ticket references, and streamline the dev cycle — all from Claude Code. Triggers on: /jw-ez-dev, jira ticket, create ticket, sprint board, create PR, jira setup. Requires the Atlassian MCP server for JIRA integration.",
-  "version": "1.0.0",
+  "name": "dev",
+  "description": "Developer workflow toolkit — JIRA management and PR creation with ticket references. Invoke with /dev:jira or /dev:pr.",
+  "version": "1.2.0",
   "author": {
-    "name": "Justworks Engineering",
-    "email": "engineering@justworks.com"
+    "name": "Brian Lai"
   }
 }

@@ -29,14 +29,14 @@ Parse the first word of `$ARGUMENTS`:
 
 | Subcommand | Example | Description |
 |------------|---------|-------------|
-| `setup` | `/jw-ez-dev:jira setup` | Link a JIRA project to this repo |
-| `create` | `/jw-ez-dev:jira create Fix login bug` | Create a ticket |
-| `list` | `/jw-ez-dev:jira list --mine` | Search/filter tickets |
-| `view` | `/jw-ez-dev:jira view RNA-456` | View ticket details |
-| `update` | `/jw-ez-dev:jira update RNA-456 --status="In Review"` | Update a ticket |
-| `plan` | `/jw-ez-dev:jira plan --from-plan` | Bulk-create from plan |
-| `board` | `/jw-ez-dev:jira board` | Sprint board view |
-| *(none)* | `/jw-ez-dev:jira` | Show config + help |
+| `setup` | `/dev:jira setup` | Link a JIRA project to this repo |
+| `create` | `/dev:jira create Fix login bug` | Create a ticket |
+| `list` | `/dev:jira list --mine` | Search/filter tickets |
+| `view` | `/dev:jira view RNA-456` | View ticket details |
+| `update` | `/dev:jira update RNA-456 --status="In Review"` | Update a ticket |
+| `plan` | `/dev:jira plan --from-plan` | Bulk-create from plan |
+| `board` | `/dev:jira board` | Sprint board view |
+| *(none)* | `/dev:jira` | Show config + help |
 
 Strip the subcommand from `$ARGUMENTS` and pass the remainder as arguments to the relevant section below.
 
@@ -49,7 +49,7 @@ All subcommands (except `setup`) start with this:
 1. Run `git rev-parse --show-toplevel` via Bash to get the git repo root (or use cwd)
 2. Read `~/.claude/jw-ez-dev/projects.json`
 3. Look up the directory key to get `cloudId` and `projectKey`
-4. If not found: "No JIRA project configured. Run `/jw-ez-dev:jira setup` first."
+4. If not found: "No JIRA project configured. Run `/dev:jira setup` first."
 
 The `cloudId` for all `mcp__atlassian__*` tools is the site URL: `"justworks-tech.atlassian.net"`.
 The browse URL for any ticket is: `https://justworks-tech.atlassian.net/browse/{ISSUE_KEY}`.
@@ -61,8 +61,8 @@ The browse URL for any ticket is: `https://justworks-tech.atlassian.net/browse/{
 Configure a Justworks JIRA project for the current repository.
 
 ```
-/jw-ez-dev:jira setup                # First-time setup or show current config
-/jw-ez-dev:jira setup --reconfigure  # Re-link to a different project
+/dev:jira setup                # First-time setup or show current config
+/dev:jira setup --reconfigure  # Re-link to a different project
 ```
 
 ### Step 0: Check Atlassian MCP Connectivity
@@ -83,7 +83,7 @@ Authorize access to justworks-tech.atlassian.net.
 
 Verify:  claude mcp list  (should show 'atlassian')
 
-After setup, run /jw-ez-dev:jira setup again.
+After setup, run /dev:jira setup again.
 ```
 
 ### Step 1: Check Existing Config
@@ -124,8 +124,8 @@ Ensure `~/.claude/jw-ez-dev/` exists. Write/update `projects.json`:
 **Project:** RNA
 **Board:** <boardUrl>
 
-Commands: /jw-ez-dev:jira <setup|create|list|view|update|plan|board>
-PR:       /jw-ez-dev:pr
+Commands: /dev:jira <setup|create|list|view|update|plan|board>
+PR:       /dev:pr
 ```
 
 ---
@@ -135,9 +135,9 @@ PR:       /jw-ez-dev:pr
 Create a new JIRA ticket.
 
 ```
-/jw-ez-dev:jira create Fix login redirect bug
-/jw-ez-dev:jira create --type=Bug --priority=High Fix login redirect bug
-/jw-ez-dev:jira create                            # Interactive
+/dev:jira create Fix login redirect bug
+/dev:jira create --type=Bug --priority=High Fix login redirect bug
+/dev:jira create                            # Interactive
 ```
 
 ### Arguments
@@ -162,14 +162,14 @@ If no arguments, prompt interactively for summary, type, and description.
 Search and display JIRA tickets.
 
 ```
-/jw-ez-dev:jira list                       # Open issues, sorted by updated
-/jw-ez-dev:jira list --mine                # My tickets
-/jw-ez-dev:jira list --sprint=current      # Current sprint
-/jw-ez-dev:jira list --status="In Progress"
-/jw-ez-dev:jira list --type=Bug
-/jw-ez-dev:jira list --backlog
-/jw-ez-dev:jira list --blockers
-/jw-ez-dev:jira list authentication        # Free-text search
+/dev:jira list                       # Open issues, sorted by updated
+/dev:jira list --mine                # My tickets
+/dev:jira list --sprint=current      # Current sprint
+/dev:jira list --status="In Progress"
+/dev:jira list --type=Bug
+/dev:jira list --backlog
+/dev:jira list --blockers
+/dev:jira list authentication        # Free-text search
 ```
 
 ### JQL Construction
@@ -200,8 +200,8 @@ Call `mcp__atlassian__searchJiraIssuesUsingJql` with `maxResults: 20`. Display a
 View detailed ticket information.
 
 ```
-/jw-ez-dev:jira view RNA-456
-/jw-ez-dev:jira view 456        # Auto-prepends project key
+/dev:jira view RNA-456
+/dev:jira view 456        # Auto-prepends project key
 ```
 
 ### Execution
@@ -218,12 +218,12 @@ View detailed ticket information.
 Update fields or transition a ticket.
 
 ```
-/jw-ez-dev:jira update RNA-456                                    # Interactive
-/jw-ez-dev:jira update RNA-456 --status="In Review"
-/jw-ez-dev:jira update RNA-456 --assign=Brian
-/jw-ez-dev:jira update RNA-456 --priority=High
-/jw-ez-dev:jira update RNA-456 --comment="Started implementation"
-/jw-ez-dev:jira update 456 --status="In Review" --comment="PR up"  # Combined
+/dev:jira update RNA-456                                    # Interactive
+/dev:jira update RNA-456 --status="In Review"
+/dev:jira update RNA-456 --assign=Brian
+/dev:jira update RNA-456 --priority=High
+/dev:jira update RNA-456 --comment="Started implementation"
+/dev:jira update 456 --status="In Review" --comment="PR up"  # Combined
 ```
 
 ### Execution
@@ -244,10 +244,10 @@ Update fields or transition a ticket.
 Bulk-create tickets from a plan or task list.
 
 ```
-/jw-ez-dev:jira plan                              # Interactive
-/jw-ez-dev:jira plan --from-plan                   # Parse active Pret/Para plan
-/jw-ez-dev:jira plan --from-file=context/plans/X.md
-/jw-ez-dev:jira plan --epic="User Authentication"  # Wrap in an Epic
+/dev:jira plan                              # Interactive
+/dev:jira plan --from-plan                   # Parse active Pret/Para plan
+/dev:jira plan --from-file=context/plans/X.md
+/dev:jira plan --epic="User Authentication"  # Wrap in an Epic
 ```
 
 ### Execution
@@ -266,9 +266,9 @@ Bulk-create tickets from a plan or task list.
 Sprint board view.
 
 ```
-/jw-ez-dev:jira board           # Current sprint, hide Done
-/jw-ez-dev:jira board --mine    # Only my tickets
-/jw-ez-dev:jira board --all     # Include Done tickets
+/dev:jira board           # Current sprint, hide Done
+/dev:jira board --mine    # Only my tickets
+/dev:jira board --all     # Include Done tickets
 ```
 
 ### Execution
