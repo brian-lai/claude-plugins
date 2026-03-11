@@ -1,0 +1,16 @@
+{
+  "description": "jw-ez-dev session hooks — checks for required dependencies on session start",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/check-deps.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

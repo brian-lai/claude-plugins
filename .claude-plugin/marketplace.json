@@ -1,0 +1,26 @@
+{
+  "name": "brian-lai-plugins",
+  "owner": {
+    "name": "Brian Lai",
+    "email": "brian@brianlai.dev"
+  },
+  "metadata": {
+    "description": "Personal Claude Code plugins by Brian Lai.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "jw-ez-dev",
+      "source": "./plugins/jw-ez-dev",
+      "description": "Justworks developer workflow toolkit. Manage JIRA tickets, view sprint boards, and create PRs with JIRA references — all from Claude Code. Requires the Atlassian MCP server. Invoke with /jw-ez-dev:jira-setup, /jw-ez-dev:jira-create, /jw-ez-dev:jira-list, /jw-ez-dev:jira-view, /jw-ez-dev:jira-update, /jw-ez-dev:jira-plan, /jw-ez-dev:jira-board, /jw-ez-dev:pr.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Brian Lai"
+      },
+      "category": "workflow",
+      "tags": ["jira", "atlassian", "tickets", "pr", "workflow", "sprint", "project-management"],
+      "skills": ["./skills/jira-setup", "./skills/jira-create", "./skills/jira-list", "./skills/jira-view", "./skills/jira-update", "./skills/jira-plan", "./skills/jira-board", "./skills/pr"],
+      "strict": false
+    }
+  ]
+}

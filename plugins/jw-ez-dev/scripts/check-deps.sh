@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# jw-ez-dev dependency check
+# Runs on SessionStart to ensure prerequisites are available.
+# Exits silently (0) if everything is fine.
+# Prints a setup message and exits 0 if something is missing
+# (we still exit 0 so we don't block the session).
+
+set -euo pipefail
+
+missing=()
+
+# ── Check 1: GitHub CLI (gh) ────────────────────────────────────────
+if ! command -v gh &>/dev/null; then
+  missing+=("gh")
+fi
+
+# ── Check 2: Atlassian MCP server ───────────────────────────────────
+# Look for "atlassian" in any of the known MCP config locations.
+atlassian_found=false
+for f in "$HOME/.claude.json" "$HOME/.claude/.mcp.json" ".mcp.json" ".claude/mcp.json"; do
+  if [ -f "$f" ] && grep -qi "atlassian" "$f" 2>/dev/null; then
+    atlassian_found=true
+    break
+  fi
+done
+
+if [ "$atlassian_found" = false ]; then
+  missing+=("atlassian-mcp")
+fi
+
+# ── All good ─────────────────────────────────────────────────────────
+if [ ${#missing[@]} -eq 0 ]; then
+  exit 0
+fi
+
+# ── Print setup instructions ─────────────────────────────────────────
+echo ""
+echo "╔══════════════════════════════════════════════════════════════╗"
+echo "║  jw-ez-dev: missing dependencies                           ║"
+echo "╚══════════════════════════════════════════════════════════════╝"
+echo ""
+
+for dep in "${missing[@]}"; do
+  case "$dep" in
+    gh)
+      echo "  ✗ GitHub CLI (gh) — required for /jw-ez-dev:pr"
+      echo ""
+      echo "    Install:   brew install gh"
+      echo "    Authenticate:  gh auth login"
+      echo ""
+      ;;
+    atlassian-mcp)
+      echo "  ✗ Atlassian MCP server — required for all JIRA skills"
+      echo ""
+      echo "    Install:   claude mcp add --transport http --global atlassian https://mcp.atlassian.com/v1/mcp"
+      echo "    Auth:      On first use, your browser will open for Atlassian OAuth"
+      echo "    Verify:    claude mcp list  (should show 'atlassian')"
+      echo ""
+      ;;
+  esac
+done
+
+echo "  After installing, restart Claude Code for changes to take effect."
+echo ""
+
+exit 0
