@@ -6,7 +6,8 @@
   },
   "metadata": {
     "description": "Personal Claude Code plugins by Brian Lai.",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "lastUpdated": "2026-03-10"
   },
   "plugins": [
     {
@@ -20,7 +21,7 @@
       "category": "workflow",
       "tags": ["jira", "atlassian", "tickets", "pr", "workflow", "sprint", "project-management"],
       "skills": ["./skills/jira-setup", "./skills/jira-create", "./skills/jira-list", "./skills/jira-view", "./skills/jira-update", "./skills/jira-plan", "./skills/jira-board", "./skills/pr"],
-      "strict": false
+      "strict": true
     }
   ]
 }
