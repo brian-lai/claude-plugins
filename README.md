@@ -4,18 +4,18 @@ Personal Claude Code plugin marketplace.
 
 ## Installation
 
-```bash
+```
 /plugin marketplace add brian-lai/claude-plugins
 ```
 
 ## Available Plugins
 
-### jw-ez-dev
+### dev
 
-Justworks developer workflow toolkit — manage JIRA tickets, view sprint boards, and create PRs with JIRA references from Claude Code.
+Developer workflow toolkit — JIRA ticket management, PR creation with JIRA references, and PR code review with automated comment resolution.
 
-```bash
-/plugin install jw-ez-dev@brian-lai-plugins
+```
+/plugin install dev@brian-lai-plugins
 ```
 
-See [plugins/jw-ez-dev/README.md](plugins/jw-ez-dev/README.md) for full documentation.
+See [plugins/dev/README.md](plugins/dev/README.md) for full documentation.

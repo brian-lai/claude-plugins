@@ -1,131 +1,138 @@
-# JW EZ Dev
+# dev
 
-Justworks developer workflow toolkit for Claude Code. Manage JIRA tickets, view sprint boards, and create PRs with JIRA references — all without leaving your terminal.
+Developer workflow toolkit for Claude Code. Manage JIRA tickets, create PRs with ticket references, and review PRs with automated comment resolution — all without leaving your terminal.
 
-## Setup
+## Install
 
-### Automatic (recommended)
-
-On every new Claude Code session, the plugin checks for missing dependencies and prints setup instructions if anything is missing. To install everything at once, run the setup script:
-
-```bash
-bash ~/.claude/plugins/marketplaces/*/plugins/jw-ez-dev/scripts/setup.sh
+```
+/plugin marketplace add brian-lai/claude-plugins
+/plugin install dev@brian-lai-plugins
 ```
 
-This installs/configures:
-- **Atlassian MCP server** — for all JIRA skills
-- **GitHub CLI (`gh`)** — for PR creation
+## Prerequisites
 
-### Manual
+### Atlassian MCP Server (required for JIRA commands)
 
-If you prefer to set things up yourself:
-
-**Atlassian MCP Server:**
 ```bash
 claude mcp add --transport http --global atlassian https://mcp.atlassian.com/v1/mcp
 ```
+
 On first use, your browser will open for Atlassian OAuth. Authorize access to **justworks-tech.atlassian.net**.
 
-**GitHub CLI:**
+Verify: `claude mcp list` — should show `atlassian`.
+
+- No API keys needed — uses OAuth
+- No npx, Docker, or local dependencies
+- Hosted by Atlassian at mcp.atlassian.com
+
+### GitHub CLI (required for `/dev:pr` and `/dev:review`)
+
 ```bash
 brew install gh
 gh auth login
 ```
 
-**Verify:**
-```bash
-claude mcp list    # should show 'atlassian'
-gh auth status     # should show authenticated
-```
+### Automatic setup
 
-**Notes:**
-- No API keys or tokens needed — Atlassian uses OAuth
-- No npx, Docker, or local dependencies required
-- The MCP server is hosted by Atlassian at mcp.atlassian.com
+On every session start, the plugin checks for missing dependencies and prints instructions if anything is missing. To install both in one shot:
+
+```bash
+bash ~/.claude/plugins/marketplaces/brian-lai-plugins/plugins/dev/scripts/setup.sh
+```
 
 ## Getting Started
 
-1. Install the plugin from the Justworks marketplace
-2. The session hook will check dependencies — follow any setup prompts
-3. Navigate to your project repository
-4. Run `/jw-ez-dev:jira-setup` to link your repo to a JIRA project
-5. Start managing tickets and creating PRs
+1. Install the plugin
+2. Navigate to your project repository
+3. Run `/dev:jira setup` to link your repo to a JIRA project
+4. Start managing tickets, creating PRs, and running reviews
 
 ## Commands
 
-### Project Setup
+### `/dev:jira <subcommand>`
 
-| Command | Description |
-|---------|-------------|
-| `/jw-ez-dev:jira-setup` | Link a JIRA project to the current repo |
-| `/jw-ez-dev:jira-setup --reconfigure` | Re-link to a different project |
+All JIRA operations in one command.
 
-### Ticket Management
-
-| Command | Description |
-|---------|-------------|
-| `/jw-ez-dev:jira-create` | Create a new JIRA ticket |
-| `/jw-ez-dev:jira-list` | List/search tickets with filters |
-| `/jw-ez-dev:jira-view <KEY>` | View full ticket details |
-| `/jw-ez-dev:jira-update <KEY>` | Update fields or transition status |
-| `/jw-ez-dev:jira-plan` | Bulk-create tickets from a plan |
-| `/jw-ez-dev:jira-board` | View current sprint board |
-
-### Pull Requests
-
-| Command | Description |
-|---------|-------------|
-| `/jw-ez-dev:pr` | Create PR with JIRA ticket reference |
-| `/jw-ez-dev:pr RNA-456` | Create PR linked to specific ticket |
-| `/jw-ez-dev:pr --draft` | Create as draft PR |
-
-## Usage Examples
-
-### Quick ticket creation
 ```
-/jw-ez-dev:jira-create --type=Bug Login button unresponsive on Safari
-```
+/dev:jira setup                             # Link repo to JIRA project (first-time setup)
+/dev:jira setup --reconfigure               # Re-link to a different project
 
-### View your sprint work
-```
-/jw-ez-dev:jira-board --mine
+/dev:jira create Fix login redirect bug
+/dev:jira create --type=Bug --priority=High Fix login redirect bug
+
+/dev:jira list                              # Open issues, sorted by updated
+/dev:jira list --mine                       # My tickets
+/dev:jira list --sprint=current             # Current sprint
+/dev:jira list --status="In Progress"
+/dev:jira list --backlog
+/dev:jira list authentication               # Free-text search
+
+/dev:jira view RNA-456                      # Full ticket details + transitions
+/dev:jira view 456                          # Auto-prepends project key
+
+/dev:jira update RNA-456 --status="In Review"
+/dev:jira update RNA-456 --assign=Brian --comment="Starting work"
+/dev:jira update RNA-456                    # Interactive
+
+/dev:jira plan                              # Bulk-create from interactive input
+/dev:jira plan --from-plan                  # Parse active Pret/Para plan
+/dev:jira plan --from-file=context/plans/X.md
+/dev:jira plan --epic="User Authentication"
+
+/dev:jira board                             # Current sprint by status column
+/dev:jira board --mine
+/dev:jira board --all                       # Include Done tickets
 ```
 
-### Search for tickets
+### `/dev:pr`
+
+Create a GitHub PR with the JIRA ticket in the title and a link in the body. Auto-detects the ticket from your branch name.
+
 ```
-/jw-ez-dev:jira-list --sprint=current --mine
-/jw-ez-dev:jira-list authentication
+/dev:pr                   # Auto-detect ticket from branch name
+/dev:pr RNA-456           # Specify ticket explicitly
+/dev:pr RNA-456 --draft   # Create as draft
+/dev:pr RNA-456 --base=develop
 ```
 
-### Update ticket status
+PR title format: `RNA-456 Implement auth middleware`
+
+After creating the PR, offers to:
+- Transition the JIRA ticket to "In Review"
+- Post the PR URL as a comment on the JIRA ticket
+
+### `/dev:review`
+
+Two-phase command: deep code review + automated comment resolution.
+
 ```
-/jw-ez-dev:jira-update RNA-456 --status="In Progress"
-/jw-ez-dev:jira-update RNA-456 --status="In Review" --comment="PR submitted"
+/dev:review                          # Full review + address all open comments
+/dev:review --post                   # Same, also posts review to GitHub
+/dev:review --comments-only          # Address open comments only, skip review
+/dev:review --review-only            # Deep review only, don't touch comments
+/dev:review --aspects=code,tests     # Targeted review aspects
+/dev:review --pr=123                 # Target a specific PR number
 ```
 
-### Create PR with JIRA link
-```
-/jw-ez-dev:pr RNA-456
-```
-This creates a PR with:
-- Title: `RNA-456 Implement auth middleware`
-- Body includes a link to the JIRA ticket
-- Optionally transitions the ticket to "In Review"
+**Phase 1 — Code Review:**
+Runs `pr-review-toolkit:review-pr` agents (code quality, bugs, error handling, tests, types). Produces a structured report with Critical → Important → Suggestions → Strengths. With `--post`, also runs `code-review` and posts high-confidence issues (≥80 threshold) to GitHub.
 
-### Bulk-create from a plan
-```
-/jw-ez-dev:jira-plan --from-plan --epic="User Authentication"
-```
+**Phase 2 — Address Open Comments:**
+Fetches all open PR comments — inline review comments, top-level discussion, and bot reviews (CodeRabbit, Copilot, SonarCloud, etc.). For each: makes the code fix, replies to the thread, or notes won't-fix. Asks for confirmation before committing and pushing.
 
-## How Configuration Works
+## Configuration
 
-On first run of `/jw-ez-dev:jira-setup`, you provide your JIRA board URL:
+On first run of `/dev:jira setup`, you provide your JIRA board URL:
 ```
 https://justworks-tech.atlassian.net/jira/software/c/projects/RNA/boards/496
 ```
 
-This is persisted in `~/.claude/jw-ez-dev/projects.json`, keyed by git repo root. Different repos can map to different JIRA projects. The config persists across plugin updates.
+This is persisted in `~/.claude/jw-ez-dev/projects.json`, keyed by git repo root. Different repos can map to different JIRA projects. Config persists across plugin updates.
 
-## Version
+## Version History
 
-1.0.0 - Initial release
+- **1.4.0** — Added `/dev:review` command
+- **1.3.0** — Renamed plugin from `jw-ez-dev` to `dev` (`/dev:*` commands)
+- **1.2.0** — Consolidated 7 JIRA commands into single `/dev:jira <subcommand>`
+- **1.1.0** — Converted skills to commands for lazy loading (no startup token cost)
+- **1.0.0** — Initial release
