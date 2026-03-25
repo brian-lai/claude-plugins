@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# jw-ez-dev dependency check
+# dev plugin dependency check
 # Runs on SessionStart to ensure prerequisites are available.
 # Exits silently (0) if everything is fine.
 # Prints a setup message and exits 0 if something is missing
@@ -41,7 +41,7 @@ fi
 # ── Print setup instructions ─────────────────────────────────────────
 echo ""
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║  jw-ez-dev: missing dependencies                           ║"
+echo "║  dev plugin: missing dependencies                          ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 

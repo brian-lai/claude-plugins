@@ -18,7 +18,7 @@ Create a GitHub Pull Request with the JIRA ticket ID in the title and a link to 
 
 ## Step 1: Load JIRA Project Config
 
-1. Read `~/.claude/jw-ez-dev/projects.json`
+1. Read `~/.claude/dev/projects.json`
 2. Look up the current directory (git repo root)
 3. If not configured, warn: "No JIRA project configured. Run `/dev:jira setup` first. You can still create a PR without JIRA linking — proceed?"
 
@@ -65,7 +65,7 @@ Keep under 70 characters. Ask user to confirm or edit.
 <1-3 bullet points from commit history>
 
 ## Ticket
-[RNA-456](https://justworks-tech.atlassian.net/browse/RNA-456)
+[RNA-456](https://{cloudId}/browse/RNA-456)
 
 ## Test plan
 <bulleted checklist based on changes>
@@ -115,7 +115,7 @@ Warning: You have uncommitted changes (not included in PR).
 ## Notes
 
 - Requires `gh` CLI installed and authenticated
-- Reads JIRA config from `~/.claude/jw-ez-dev/projects.json` (shared with jira commands)
+- Reads JIRA config from `~/.claude/dev/projects.json` (shared with jira commands)
 - Ticket browse URL: `https://{cloudId}/browse/{TICKET_KEY}`
 - PR title format: `{TICKET_ID} {description}` (ticket ID first, no colon)
 - Works with or without JIRA config — gracefully degrades

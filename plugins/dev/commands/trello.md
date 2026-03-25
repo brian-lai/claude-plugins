@@ -39,7 +39,7 @@ Strip the subcommand from `$ARGUMENTS` and pass the remainder as arguments to th
 All subcommands (except `setup`) start with this:
 
 1. Run `git rev-parse --show-toplevel` via Bash to get the git repo root (or use cwd)
-2. Read `~/.claude/jw-ez-dev/trello-projects.json`
+2. Read `~/.claude/dev/trello-projects.json`
 3. Look up the directory key to get `boardName`
 4. If not found: "No Trello board configured. Run `/dev:trello setup` first."
 
@@ -97,7 +97,7 @@ Run `trello board:list --format json` via Bash.
 
 ### Step 2: Check Existing Config
 
-1. Read `~/.claude/jw-ez-dev/trello-projects.json`
+1. Read `~/.claude/dev/trello-projects.json`
 2. If entry exists for this directory AND no `--reconfigure` → show config and available commands
 3. Otherwise → proceed to Step 3
 
@@ -113,7 +113,7 @@ Run `trello sync` via Bash to ensure the local name-to-ID cache is up to date.
 
 ### Step 5: Persist
 
-Ensure `~/.claude/jw-ez-dev/` exists. Write/update `trello-projects.json`:
+Ensure `~/.claude/dev/` exists. Write/update `trello-projects.json`:
 
 ```json
 {

@@ -1,5 +1,5 @@
 ---
-description: Manage JIRA tickets for the configured Justworks project
+description: Manage JIRA tickets for the configured project
 argument-hint: <setup|create|list|view|update|plan|board> [args]
 allowed-tools:
   - Bash
@@ -47,18 +47,18 @@ Strip the subcommand from `$ARGUMENTS` and pass the remainder as arguments to th
 All subcommands (except `setup`) start with this:
 
 1. Run `git rev-parse --show-toplevel` via Bash to get the git repo root (or use cwd)
-2. Read `~/.claude/jw-ez-dev/projects.json`
+2. Read `~/.claude/dev/projects.json`
 3. Look up the directory key to get `cloudId` and `projectKey`
 4. If not found: "No JIRA project configured. Run `/dev:jira setup` first."
 
-The `cloudId` for all `mcp__atlassian__*` tools is the site URL: `"justworks-tech.atlassian.net"`.
-The browse URL for any ticket is: `https://justworks-tech.atlassian.net/browse/{ISSUE_KEY}`.
+The `cloudId` for all `mcp__atlassian__*` tools is the Atlassian site URL from config (e.g., `"mycompany.atlassian.net"`).
+The browse URL for any ticket is: `https://{cloudId}/browse/{ISSUE_KEY}`.
 
 ---
 
 ## setup
 
-Configure a Justworks JIRA project for the current repository.
+Configure a JIRA project for the current repository.
 
 ```
 /dev:jira setup                # First-time setup or show current config
@@ -67,7 +67,7 @@ Configure a Justworks JIRA project for the current repository.
 
 ### Step 0: Check Atlassian MCP Connectivity
 
-Attempt to call `mcp__atlassian__getVisibleJiraProjects` with `cloudId: "justworks-tech.atlassian.net"`.
+Check that the `mcp__atlassian__getVisibleJiraProjects` tool is available. If an existing `cloudId` is in config, use it; if this is a fresh setup, simply verify the tool exists (the tool being absent means the MCP server is not configured, while an auth or cloudId error means the MCP server is present but needs setup — handle each case differently).
 
 **If it fails or the tool is unavailable**, display this and stop:
 
@@ -79,49 +79,66 @@ The JIRA integration requires the Atlassian MCP server:
     claude mcp add --transport http --global atlassian https://mcp.atlassian.com/v1/mcp
 
 On first use, your browser will open for Atlassian OAuth.
-Authorize access to justworks-tech.atlassian.net.
+Authorize access to your Atlassian site.
 
 Verify:  claude mcp list  (should show 'atlassian')
 
 After setup, run /dev:jira setup again.
 ```
 
-### Step 1: Check Existing Config
+### Step 1: Migrate Legacy Config (if needed)
 
-1. Read `~/.claude/jw-ez-dev/projects.json`
+If `~/.claude/dev/projects.json` does not exist but `~/.claude/jw-ez-dev/projects.json` does:
+1. Create `~/.claude/dev/` directory
+2. Copy `~/.claude/jw-ez-dev/projects.json` → `~/.claude/dev/projects.json`
+3. If `~/.claude/jw-ez-dev/trello-projects.json` exists, copy it too
+4. Display: "Migrated config from `~/.claude/jw-ez-dev/` to `~/.claude/dev/`."
+
+### Step 2: Check Existing Config
+
+1. Read `~/.claude/dev/projects.json`
 2. If entry exists for this directory AND no `--reconfigure` → show config and available commands
 3. Otherwise → prompt for setup
 
-### Step 2: Prompt for Board URL
+### Step 3: Prompt for Atlassian Site URL
 
 ```
-Welcome to JW EZ Dev! Provide your JIRA project board URL.
-Format: https://justworks-tech.atlassian.net/jira/software/c/projects/RNA/boards/496
+Provide your Atlassian site URL (e.g., mycompany.atlassian.net):
 ```
 
-Extract `cloudId`, `projectKey`, `boardId`, `boardUrl` from the URL.
+Use **AskUserQuestion** to collect the site URL. Validate it by calling `mcp__atlassian__getVisibleJiraProjects` with the provided `cloudId`.
 
-### Step 3: Persist
+### Step 4: Prompt for Board URL
 
-Ensure `~/.claude/jw-ez-dev/` exists. Write/update `projects.json`:
+```
+Provide your JIRA project board URL.
+Format: https://<site>.atlassian.net/jira/software/c/projects/<KEY>/boards/<ID>
+```
+
+Extract `projectKey`, `boardId`, `boardUrl` from the URL. The `cloudId` comes from Step 3.
+
+### Step 5: Persist
+
+Ensure `~/.claude/dev/` exists. Write/update `projects.json`:
 ```json
 {
   "<repo-root>": {
-    "cloudId": "justworks-tech.atlassian.net",
-    "projectKey": "RNA",
-    "boardId": "496",
-    "boardUrl": "https://justworks-tech.atlassian.net/jira/software/c/projects/RNA/boards/496",
+    "cloudId": "<site>.atlassian.net",
+    "projectKey": "<KEY>",
+    "boardId": "<ID>",
+    "boardUrl": "https://<site>.atlassian.net/jira/software/c/projects/<KEY>/boards/<ID>",
     "configuredAt": "<ISO timestamp>"
   }
 }
 ```
 
-### Step 4: Show Config
+### Step 6: Show Config
 
 ```
-## JW EZ Dev - Project Configured
+## JIRA Project Configured
 
-**Project:** RNA
+**Site:** <cloudId>
+**Project:** <projectKey>
 **Board:** <boardUrl>
 
 Commands: /dev:jira <setup|create|list|view|update|plan|board>

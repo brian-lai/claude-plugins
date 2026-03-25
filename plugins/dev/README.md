@@ -17,7 +17,7 @@ Developer workflow toolkit for Claude Code. Manage JIRA tickets, Trello cards, c
 claude mcp add --transport http --global atlassian https://mcp.atlassian.com/v1/mcp
 ```
 
-On first use, your browser will open for Atlassian OAuth. Authorize access to **justworks-tech.atlassian.net**.
+On first use, your browser will open for Atlassian OAuth. Authorize access to your Atlassian site.
 
 Verify: `claude mcp list` — should show `atlassian`.
 
@@ -169,21 +169,23 @@ Fetches all open PR comments — inline review comments, top-level discussion, a
 
 ### JIRA
 
-On first run of `/dev:jira setup`, you provide your JIRA board URL:
+On first run of `/dev:jira setup`, you provide your Atlassian site URL and JIRA board URL:
 ```
-https://justworks-tech.atlassian.net/jira/software/c/projects/RNA/boards/496
+Site:  mycompany.atlassian.net
+Board: https://mycompany.atlassian.net/jira/software/c/projects/PROJ/boards/123
 ```
 
-Persisted in `~/.claude/jw-ez-dev/projects.json`, keyed by git repo root.
+Persisted in `~/.claude/dev/projects.json`, keyed by git repo root.
 
 ### Trello
 
 On first run of `/dev:trello setup`, you select a Trello board from your account.
 
-Persisted in `~/.claude/jw-ez-dev/trello-projects.json`, keyed by git repo root. Different repos can map to different boards. Config persists across plugin updates.
+Persisted in `~/.claude/dev/trello-projects.json`, keyed by git repo root. Different repos can map to different boards. Config persists across plugin updates.
 
 ## Version History
 
+- **1.6.0** — Removed Justworks-specific references; generalized for any Atlassian site
 - **1.5.0** — Added `/dev:trello` command
 - **1.4.0** — Added `/dev:review` command
 - **1.3.0** — Renamed plugin from `jw-ez-dev` to `dev` (`/dev:*` commands)

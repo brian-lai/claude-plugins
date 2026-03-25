@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# jw-ez-dev setup script
+# dev plugin setup script
 # Installs missing dependencies: GitHub CLI and Atlassian MCP server.
 # Safe to run multiple times — skips anything already installed.
 
 set -euo pipefail
 
 echo ""
-echo "jw-ez-dev setup"
+echo "dev plugin setup"
 echo "════════════════"
 echo ""
 
@@ -52,7 +52,7 @@ else
     claude mcp add --transport http --global atlassian https://mcp.atlassian.com/v1/mcp
     echo "  ✓ Atlassian MCP server added"
     echo "  ℹ On first use, your browser will open for Atlassian OAuth."
-    echo "    Authorize access to justworks-tech.atlassian.net."
+    echo "    Authorize access to your Atlassian site when prompted."
   else
     echo "  ✗ 'claude' CLI not found in PATH. Add the MCP server manually:"
     echo "    claude mcp add --transport http --global atlassian https://mcp.atlassian.com/v1/mcp"
