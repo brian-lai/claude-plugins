@@ -28,6 +28,11 @@ if [ "$atlassian_found" = false ]; then
   missing+=("atlassian-mcp")
 fi
 
+# ── Check 3: trello-cli ──────────────────────────────────────────
+if ! command -v trello &>/dev/null; then
+  missing+=("trello-cli")
+fi
+
 # ── All good ─────────────────────────────────────────────────────────
 if [ ${#missing[@]} -eq 0 ]; then
   exit 0
@@ -43,18 +48,27 @@ echo ""
 for dep in "${missing[@]}"; do
   case "$dep" in
     gh)
-      echo "  ✗ GitHub CLI (gh) — required for /jw-ez-dev:pr"
+      echo "  ✗ GitHub CLI (gh) — required for /dev:pr"
       echo ""
       echo "    Install:   brew install gh"
       echo "    Authenticate:  gh auth login"
       echo ""
       ;;
     atlassian-mcp)
-      echo "  ✗ Atlassian MCP server — required for all JIRA skills"
+      echo "  ✗ Atlassian MCP server — required for /dev:jira"
       echo ""
       echo "    Install:   claude mcp add --transport http --global atlassian https://mcp.atlassian.com/v1/mcp"
       echo "    Auth:      On first use, your browser will open for Atlassian OAuth"
       echo "    Verify:    claude mcp list  (should show 'atlassian')"
+      echo ""
+      ;;
+    trello-cli)
+      echo "  ✗ trello-cli — required for /dev:trello"
+      echo ""
+      echo "    Install:   npm install -g trello-cli"
+      echo "    Auth:      trello auth:api-key YOUR_KEY && trello auth:token YOUR_TOKEN"
+      echo "    API key:   https://trello.com/power-ups/admin"
+      echo "    Sync:      trello sync"
       echo ""
       ;;
   esac
