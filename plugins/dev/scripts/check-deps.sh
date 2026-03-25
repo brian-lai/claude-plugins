@@ -41,7 +41,7 @@ fi
 # ── Print setup instructions ─────────────────────────────────────────
 echo ""
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║  dev plugin: missing dependencies                           ║"
+echo "║  dev plugin: missing dependencies                          ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 

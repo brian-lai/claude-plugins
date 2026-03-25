@@ -185,9 +185,9 @@ Persisted in `~/.claude/dev/trello-projects.json`, keyed by git repo root. Diffe
 
 ## Version History
 
+- **1.6.0** — Removed Justworks-specific references; generalized for any Atlassian site
 - **1.5.0** — Added `/dev:trello` command
 - **1.4.0** — Added `/dev:review` command
-- **1.6.0** — Removed Justworks-specific references; generalized for any Atlassian site
 - **1.3.0** — Renamed plugin from `jw-ez-dev` to `dev` (`/dev:*` commands)
 - **1.2.0** — Consolidated 7 JIRA commands into single `/dev:jira <subcommand>`
 - **1.1.0** — Converted skills to commands for lazy loading (no startup token cost)

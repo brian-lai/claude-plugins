@@ -67,7 +67,7 @@ Configure a JIRA project for the current repository.
 
 ### Step 0: Check Atlassian MCP Connectivity
 
-Attempt to call `mcp__atlassian__getVisibleJiraProjects` with a test `cloudId` (if one exists in config, use it; otherwise use a placeholder to test connectivity).
+Check that the `mcp__atlassian__getVisibleJiraProjects` tool is available. If an existing `cloudId` is in config, use it; if this is a fresh setup, simply verify the tool exists (the tool being absent means the MCP server is not configured, while an auth or cloudId error means the MCP server is present but needs setup — handle each case differently).
 
 **If it fails or the tool is unavailable**, display this and stop:
 
@@ -86,13 +86,21 @@ Verify:  claude mcp list  (should show 'atlassian')
 After setup, run /dev:jira setup again.
 ```
 
-### Step 1: Check Existing Config
+### Step 1: Migrate Legacy Config (if needed)
+
+If `~/.claude/dev/projects.json` does not exist but `~/.claude/jw-ez-dev/projects.json` does:
+1. Create `~/.claude/dev/` directory
+2. Copy `~/.claude/jw-ez-dev/projects.json` → `~/.claude/dev/projects.json`
+3. If `~/.claude/jw-ez-dev/trello-projects.json` exists, copy it too
+4. Display: "Migrated config from `~/.claude/jw-ez-dev/` to `~/.claude/dev/`."
+
+### Step 2: Check Existing Config
 
 1. Read `~/.claude/dev/projects.json`
 2. If entry exists for this directory AND no `--reconfigure` → show config and available commands
 3. Otherwise → prompt for setup
 
-### Step 2: Prompt for Atlassian Site URL
+### Step 3: Prompt for Atlassian Site URL
 
 ```
 Provide your Atlassian site URL (e.g., mycompany.atlassian.net):
@@ -100,16 +108,16 @@ Provide your Atlassian site URL (e.g., mycompany.atlassian.net):
 
 Use **AskUserQuestion** to collect the site URL. Validate it by calling `mcp__atlassian__getVisibleJiraProjects` with the provided `cloudId`.
 
-### Step 3: Prompt for Board URL
+### Step 4: Prompt for Board URL
 
 ```
 Provide your JIRA project board URL.
 Format: https://<site>.atlassian.net/jira/software/c/projects/<KEY>/boards/<ID>
 ```
 
-Extract `projectKey`, `boardId`, `boardUrl` from the URL. The `cloudId` comes from Step 2.
+Extract `projectKey`, `boardId`, `boardUrl` from the URL. The `cloudId` comes from Step 3.
 
-### Step 4: Persist
+### Step 5: Persist
 
 Ensure `~/.claude/dev/` exists. Write/update `projects.json`:
 ```json
@@ -124,7 +132,7 @@ Ensure `~/.claude/dev/` exists. Write/update `projects.json`:
 }
 ```
 
-### Step 5: Show Config
+### Step 6: Show Config
 
 ```
 ## JIRA Project Configured
