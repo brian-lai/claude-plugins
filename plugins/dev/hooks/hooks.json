@@ -1,5 +1,5 @@
 {
-  "description": "jw-ez-dev session hooks — checks for required dependencies on session start",
+  "description": "dev plugin session hooks — checks for required dependencies on session start",
   "hooks": {
     "SessionStart": [
       {
