@@ -1,6 +1,6 @@
 # dev
 
-Developer workflow toolkit for Claude Code. Manage JIRA tickets, create PRs with ticket references, and review PRs with automated comment resolution — all without leaving your terminal.
+Developer workflow toolkit for Claude Code. Manage JIRA tickets, Trello cards, create PRs with ticket references, and review PRs with automated comment resolution — all without leaving your terminal.
 
 ## Install
 
@@ -25,6 +25,20 @@ Verify: `claude mcp list` — should show `atlassian`.
 - No npx, Docker, or local dependencies
 - Hosted by Atlassian at mcp.atlassian.com
 
+### trello-cli (required for Trello commands)
+
+```bash
+npm install -g trello-cli
+```
+
+Authenticate with your Trello API key and token:
+
+```bash
+trello auth:api-key YOUR_KEY    # Get key from https://trello.com/power-ups/admin
+trello auth:token YOUR_TOKEN    # Visit the token URL printed by the previous command
+trello sync                     # Build local name-to-ID cache
+```
+
 ### GitHub CLI (required for `/dev:pr` and `/dev:review`)
 
 ```bash
@@ -44,8 +58,8 @@ bash ~/.claude/plugins/marketplaces/brian-lai-plugins/plugins/dev/scripts/setup.
 
 1. Install the plugin
 2. Navigate to your project repository
-3. Run `/dev:jira setup` to link your repo to a JIRA project
-4. Start managing tickets, creating PRs, and running reviews
+3. Run `/dev:jira setup` to link your repo to a JIRA project, or `/dev:trello setup` to link a Trello board
+4. Start managing tickets/cards, creating PRs, and running reviews
 
 ## Commands
 
@@ -82,6 +96,37 @@ All JIRA operations in one command.
 /dev:jira board                             # Current sprint by status column
 /dev:jira board --mine
 /dev:jira board --all                       # Include Done tickets
+```
+
+### `/dev:trello <subcommand>`
+
+All Trello operations in one command. Uses `trello-cli` under the hood.
+
+```
+/dev:trello setup                            # Link repo to a Trello board
+/dev:trello setup --reconfigure              # Re-link to a different board
+
+/dev:trello create Fix login redirect bug
+/dev:trello create --list="In Progress" --label=Bug Fix login redirect bug
+
+/dev:trello list                             # All cards on the board
+/dev:trello list --mine                      # Cards assigned to me
+/dev:trello list --list="In Progress"        # Cards in a specific list
+/dev:trello list authentication              # Free-text search
+
+/dev:trello view My Card                     # Card details + checklists + comments
+/dev:trello view "In Progress/My Card"       # Disambiguate by list
+
+/dev:trello update My Card --move="Done"
+/dev:trello update My Card --assign=brian --comment="Starting work"
+/dev:trello update My Card                   # Interactive
+
+/dev:trello plan                             # Bulk-create from interactive input
+/dev:trello plan --from-plan                 # Parse active PARA plan
+/dev:trello plan --from-file=context/plans/X.md
+
+/dev:trello board                            # Board overview by list
+/dev:trello board --mine
 ```
 
 ### `/dev:pr`
@@ -122,15 +167,24 @@ Fetches all open PR comments — inline review comments, top-level discussion, a
 
 ## Configuration
 
+### JIRA
+
 On first run of `/dev:jira setup`, you provide your JIRA board URL:
 ```
 https://justworks-tech.atlassian.net/jira/software/c/projects/RNA/boards/496
 ```
 
-This is persisted in `~/.claude/jw-ez-dev/projects.json`, keyed by git repo root. Different repos can map to different JIRA projects. Config persists across plugin updates.
+Persisted in `~/.claude/jw-ez-dev/projects.json`, keyed by git repo root.
+
+### Trello
+
+On first run of `/dev:trello setup`, you select a Trello board from your account.
+
+Persisted in `~/.claude/jw-ez-dev/trello-projects.json`, keyed by git repo root. Different repos can map to different boards. Config persists across plugin updates.
 
 ## Version History
 
+- **1.5.0** — Added `/dev:trello` command
 - **1.4.0** — Added `/dev:review` command
 - **1.3.0** — Renamed plugin from `jw-ez-dev` to `dev` (`/dev:*` commands)
 - **1.2.0** — Consolidated 7 JIRA commands into single `/dev:jira <subcommand>`
