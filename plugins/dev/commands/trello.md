@@ -146,6 +146,7 @@ Create a new Trello card.
 /dev:trello create Fix login redirect bug
 /dev:trello create --list="In Progress" Fix login redirect bug
 /dev:trello create --label=Bug --due="next friday" Fix login redirect bug
+/dev:trello create --description="quick note" Fix something
 /dev:trello create                            # Interactive
 ```
 
@@ -155,20 +156,61 @@ Create a new Trello card.
 - `--label=<name>`: label to apply (can specify multiple: `--label=Bug --label=Urgent`)
 - `--due=<date>`: due date (natural language supported, e.g., "next friday", "2026-04-01")
 - `--assign=<username>`: assign a board member
-- `--description=<text>`: card description
+- `--description=<text>`: verbatim card description (bypasses structured flow)
 - `--position=top|bottom` (default: top)
 
-If no arguments, prompt interactively for name, list, and description.
+### Description Collection
+
+Card descriptions use structured sections. Since Trello has no issue types, the `--label` flag determines which sections apply:
+
+| Section | Purpose | Bug | Feature | (default/no label) |
+|---------|---------|-----|---------|---------------------|
+| **Description** | What this is about | required | required | required |
+| **Problem** | Why this work is needed | required | required | optional |
+| **Solution** | How to address it | required | required | optional |
+| **Acceptance Criteria** | Definition of done | recommended | recommended | optional |
+| **Technical Notes** | Impl details, links, constraints | optional | optional | optional |
+
+Label matching is case-insensitive. If multiple labels are provided, use the first one that matches `Bug` or `Feature`. All other labels (or no label) use the default column.
+
+**Three modes determine how the description is collected:**
+
+1. **No arguments** → Fully interactive: prompt for name and labels first, then walk through each applicable section one at a time using **AskUserQuestion**. Mark required sections clearly; allow skipping optional/recommended ones.
+
+2. **Name provided, no `--description`** → AI-assisted: use the card name and any available context (repo name, recent commits, active plan, labels) to draft a structured description with the applicable sections pre-filled. Present the draft to the user for review/editing via **AskUserQuestion** before creating the card.
+
+3. **`--description` provided** → Use the value verbatim as the card description. No structured sections are added (escape hatch for quick cards).
+
+Empty or skipped sections are omitted from the final description. The rendered format is:
+
+```markdown
+## Description
+<text>
+
+## Problem
+<text>
+
+## Solution
+<text>
+
+## Acceptance Criteria
+- [ ] <criterion>
+
+## Technical Notes
+<text>
+```
 
 ### Execution
 
 1. Load config → get `boardName`
-2. If no `--list`, fetch lists via `trello list:list --board "<board>" --format json` and use the first open list, or prompt the user to choose
-3. Build command: `trello card:create --board "<board>" --list "<list>" --name "<name>" --format json`
-   - Add `--label`, `--due`, `--description`, `--position` flags as provided
-4. If `--assign`: follow up with `trello card:assign --board "<board>" --list "<list>" --card "<name>" --user "<username>"`
-5. Display: `**<card name>** created in **<list>** | Labels: <labels> | Due: <date>`
-6. Include the card URL if available from the JSON output
+2. Determine description mode and collect/generate the description per the rules above
+3. If no `--list`, fetch lists via `trello list:list --board "<board>" --format json` and use the first open list, or prompt the user to choose
+4. Build command: `trello card:create --board "<board>" --list "<list>" --name "<name>" --format json`
+   - Add `--label`, `--due`, `--position` flags as provided
+   - Pass the composed markdown description via `--description`
+5. If `--assign`: follow up with `trello card:assign --board "<board>" --list "<list>" --card "<name>" --user "<username>"`
+6. Display: `**<card name>** created in **<list>** | Labels: <labels> | Due: <date>`
+7. Include the card URL if available from the JSON output
 
 ---
 

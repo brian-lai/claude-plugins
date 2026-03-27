@@ -154,6 +154,7 @@ Create a new JIRA ticket.
 ```
 /dev:jira create Fix login redirect bug
 /dev:jira create --type=Bug --priority=High Fix login redirect bug
+/dev:jira create --description="quick note" Fix something
 /dev:jira create                            # Interactive
 ```
 
@@ -163,14 +164,53 @@ Create a new JIRA ticket.
 - `--priority=Highest|High|Medium|Low|Lowest`
 - `--assign=<name>`: search via `mcp__atlassian__lookupJiraAccountId`
 - `--parent=<KEY>`: parent issue key for subtasks
+- `--description=<text>`: verbatim description (bypasses structured flow)
 
-If no arguments, prompt interactively for summary, type, and description.
+### Description Collection
+
+Ticket descriptions use structured sections. Which sections apply depends on the issue type:
+
+| Section | Purpose | Bug | Story | Task | Sub-task | Epic |
+|---------|---------|-----|-------|------|----------|------|
+| **Description** | What this is about | required | required | required | required | required |
+| **Problem** | Why this work is needed | required | required | optional | -- | required |
+| **Solution** | How to address it | required | required | optional | -- | -- |
+| **Acceptance Criteria** | Definition of done | recommended | recommended | optional | -- | recommended |
+| **Technical Notes** | Impl details, links, constraints | optional | optional | optional | optional | -- |
+
+**Three modes determine how the description is collected:**
+
+1. **No arguments** → Fully interactive: prompt for type and summary first, then walk through each applicable section one at a time using **AskUserQuestion**. Mark required sections clearly; allow skipping optional/recommended ones. Omit sections marked `--` for the chosen type.
+
+2. **Summary provided, no `--description`** → AI-assisted: use the summary text and any available context (repo name, recent commits, active plan) to draft a structured description with the applicable sections pre-filled. Present the draft to the user for review/editing via **AskUserQuestion** before creating the ticket.
+
+3. **`--description` provided** → Use the value verbatim as the ticket description. No structured sections are added (escape hatch for quick tickets).
+
+Empty or skipped sections are omitted from the final description. The rendered format is:
+
+```markdown
+## Description
+<text>
+
+## Problem
+<text>
+
+## Solution
+<text>
+
+## Acceptance Criteria
+- [ ] <criterion>
+
+## Technical Notes
+<text>
+```
 
 ### Execution
 
-1. Optionally call `mcp__atlassian__getJiraProjectIssueTypesMetadata` for validation
-2. Call `mcp__atlassian__createJiraIssue` with `cloudId`, `projectKey`, `issueTypeName`, `summary`, `description`, `parent`
-3. Display: `**[RNA-456](https://...browse/RNA-456)**: <summary> | Type: Task | Status: To Do`
+1. Determine description mode and collect/generate the description per the rules above
+2. Optionally call `mcp__atlassian__getJiraProjectIssueTypesMetadata` for validation
+3. Call `mcp__atlassian__createJiraIssue` with `cloudId`, `projectKey`, `issueTypeName`, `summary`, `description`, `parent`, and `contentFormat: "markdown"`
+4. Display: `**[RNA-456](https://...browse/RNA-456)**: <summary> | Type: Task | Status: To Do`
 
 ---
 
