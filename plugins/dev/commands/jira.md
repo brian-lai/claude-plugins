@@ -36,7 +36,7 @@ Parse the first word of `$ARGUMENTS`:
 | `update` | `/dev:jira update RNA-456 --status="In Review"` | Update a ticket |
 | `plan` | `/dev:jira plan --from-plan` | Bulk-create from plan |
 | `board` | `/dev:jira board` | Sprint board view |
-| `groom` | `/dev:jira groom` | Sprint grooming report |
+| `groom` | `/dev:jira groom` | Board grooming report |
 | *(none)* | `/dev:jira` | Show config + help |
 
 Strip the subcommand from `$ARGUMENTS` and pass the remainder as arguments to the relevant section below.
@@ -359,7 +359,7 @@ Analyze open tickets for anomalies and produce a grooming report with AI-generat
 The command auto-detects the board style:
 
 1. **Sprint board:** Query with `sprint in openSprints()` first. If results are returned, scope the report to the active sprint.
-2. **Kanban (no sprint):** If the sprint query returns no results, fall back to all open tickets: `project = "<key>" AND status != Done`. Note this in the report header ("**Board:** kanban" instead of "**Sprint:** <name>").
+2. **Kanban (no sprint):** If the sprint query returns no results, fall back to open tickets updated in the last 90 days: `project = "<key>" AND status != Done AND updated >= -90d`. Note this in the report header ("**Board:** kanban" instead of "**Sprint:** <name>"). If results are truncated at 100, include "Showing 100 of N open tickets" in the header.
 
 ### Anomaly Categories
 
@@ -370,7 +370,7 @@ Evaluate every in-scope ticket (excluding Done) against these four categories. A
 | **Stale** | No update in N days (per `--stale` threshold) | In Progress, In Review |
 | **Unassigned in-flight** | No assignee on active work | In Progress, In Review |
 | **Missing metadata** | No description OR no priority set | All statuses (except Done) |
-| **Priority mismatch** | High/Highest priority in To Do for 5+ days; Epic as a sprint item; Sub-task with no parent | To Do, In Progress |
+| **Priority mismatch** | High/Highest priority in To Do for N+ days (per `--stale` threshold); Epic as a sprint item; Sub-task with no parent | To Do, In Progress |
 
 **Design notes:**
 - Stale only applies to active statuses — a To Do ticket sitting untouched is normal.
@@ -383,7 +383,7 @@ Evaluate every in-scope ticket (excluding Done) against these four categories. A
 2. Detect board style and query tickets:
    - First, try sprint-scoped: `project = "<key>" AND sprint in openSprints() AND status != Done ORDER BY priority DESC, status ASC`
    - If that returns results → sprint mode. Note the sprint name for the report header.
-   - If that returns no results → kanban fallback: `project = "<key>" AND status != Done ORDER BY priority DESC, status ASC`
+   - If that returns no results → kanban fallback: `project = "<key>" AND status != Done AND updated >= -90d ORDER BY priority DESC, status ASC`
    - `maxResults: 100`. If results are truncated, note the count in the report header.
    - Request fields: `summary`, `status`, `issuetype`, `priority`, `assignee`, `updated`, `description`, `parent`
 3. For each ticket, evaluate against all four anomaly categories using the returned fields
@@ -416,8 +416,8 @@ Evaluate every in-scope ticket (excluding Done) against these four categories. A
 | [RNA-201](https://...) | Login bug | @brian | description, priority | Bug with no description or priority — can't be triaged |
 
 ### Priority Mismatches (N)
-| Ticket | Summary | Type | Priority | Status | Days in Status | Action |
-|--------|---------|------|----------|--------|---------------|--------|
+| Ticket | Summary | Type | Priority | Status | Days Since Update | Action |
+|--------|---------|------|----------|--------|-------------------|--------|
 | [RNA-210](https://...) | Security patch | Bug | Highest | To Do | 12 days | Highest priority but not started — should be picked up immediately |
 
 ---
