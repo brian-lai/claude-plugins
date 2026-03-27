@@ -343,10 +343,10 @@ Sprint board view.
 
 ## groom
 
-Analyze the current sprint for anomalous tickets and produce a grooming report with AI-generated action items.
+Analyze open tickets for anomalies and produce a grooming report with AI-generated action items. Works with both sprint-based and kanban boards.
 
 ```
-/dev:jira groom              # Analyze current sprint
+/dev:jira groom              # Analyze current sprint (or all open tickets for kanban)
 /dev:jira groom --stale=5    # Override stale threshold (default: 7 days)
 ```
 
@@ -354,9 +354,16 @@ Analyze the current sprint for anomalous tickets and produce a grooming report w
 
 - `--stale=<days>` (default: 7): Calendar days with no update before a ticket is considered stale
 
+### Board Detection
+
+The command auto-detects the board style:
+
+1. **Sprint board:** Query with `sprint in openSprints()` first. If results are returned, scope the report to the active sprint.
+2. **Kanban (no sprint):** If the sprint query returns no results, fall back to all open tickets: `project = "<key>" AND status != Done`. Note this in the report header ("**Board:** kanban" instead of "**Sprint:** <name>").
+
 ### Anomaly Categories
 
-Evaluate every sprint ticket (excluding Done) against these four categories. A ticket can appear in multiple categories.
+Evaluate every in-scope ticket (excluding Done) against these four categories. A ticket can appear in multiple categories.
 
 | Category | Condition | Applies to |
 |----------|-----------|------------|
@@ -373,26 +380,25 @@ Evaluate every sprint ticket (excluding Done) against these four categories. A t
 ### Execution
 
 1. Load project config (shared step)
-2. Query all sprint tickets:
-   ```
-   JQL: project = "<key>" AND sprint in openSprints() AND status != Done ORDER BY priority DESC, status ASC
-   maxResults: 100
-   ```
-   Request fields: `summary`, `status`, `issuetype`, `priority`, `assignee`, `updated`, `description`, `parent`
-3. If no active sprint is found, display: "No active sprint found. Check your board configuration or start a sprint in JIRA." and stop.
-4. For each ticket, evaluate against all four anomaly categories using the returned fields
-5. For each finding, generate a **specific, concrete action item** based on the anomaly and ticket context:
+2. Detect board style and query tickets:
+   - First, try sprint-scoped: `project = "<key>" AND sprint in openSprints() AND status != Done ORDER BY priority DESC, status ASC`
+   - If that returns results → sprint mode. Note the sprint name for the report header.
+   - If that returns no results → kanban fallback: `project = "<key>" AND status != Done ORDER BY priority DESC, status ASC`
+   - `maxResults: 100`. If results are truncated, note the count in the report header.
+   - Request fields: `summary`, `status`, `issuetype`, `priority`, `assignee`, `updated`, `description`, `parent`
+3. For each ticket, evaluate against all four anomaly categories using the returned fields
+4. For each finding, generate a **specific, concrete action item** based on the anomaly and ticket context:
    - Stale → "No updates in [N] days — follow up with [assignee] or flag as blocked"
    - Unassigned → "Assign an owner or move back to To Do"
    - Missing metadata → "Add [missing field(s)] before next standup"
    - Priority mismatch → "High priority idle for [N] days — pull into In Progress or re-prioritize"
-6. Render the report (see format below)
+5. Render the report (see format below)
 
 ### Report Format
 
 ```markdown
-## Sprint Grooming Report
-**Sprint:** <name> | **Scanned:** <N> tickets | **Findings:** <N>
+## Grooming Report
+**Sprint:** <name> (or **Board:** kanban) | **Scanned:** <N> tickets | **Findings:** <N>
 
 ### Stale Tickets (N)
 | Ticket | Summary | Assignee | Status | Days Since Update | Action |
@@ -421,8 +427,8 @@ Evaluate every sprint ticket (excluding Done) against these four categories. A t
 Omit any category section with zero findings. If all tickets are clean:
 
 ```markdown
-## Sprint Grooming Report
-**Sprint:** <name> | **Scanned:** <N> tickets
+## Grooming Report
+**Sprint:** <name> (or **Board:** kanban) | **Scanned:** <N> tickets
 
 All tickets look good — no anomalies found.
 ```
