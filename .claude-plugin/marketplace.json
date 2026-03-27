@@ -6,15 +6,15 @@
   },
   "metadata": {
     "description": "Personal Claude Code plugins by Brian Lai.",
-    "version": "1.6.0",
-    "lastUpdated": "2026-03-25"
+    "version": "1.7.0",
+    "lastUpdated": "2026-03-27"
   },
   "plugins": [
     {
       "name": "dev",
       "source": "./plugins/dev",
       "description": "Developer workflow toolkit — JIRA management, Trello boards, and PR creation with ticket references. Invoke with /dev:jira, /dev:trello, or /dev:pr.",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "author": {
         "name": "Brian Lai"
       },

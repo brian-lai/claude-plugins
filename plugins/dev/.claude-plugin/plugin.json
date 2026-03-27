@@ -1,7 +1,7 @@
 {
   "name": "dev",
   "description": "Developer workflow toolkit — JIRA management, Trello boards, and PR creation with ticket references. Invoke with /dev:jira, /dev:trello, or /dev:pr.",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "author": {
     "name": "Brian Lai"
   }
